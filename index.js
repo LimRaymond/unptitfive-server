@@ -3,8 +3,8 @@ const mongoose = require('mongoose');
 const User = require('./models/User.model');
 
 const app = express();
-const port = 3000;
-const connection = 'mongodb://mongo:27017/unptitfive';
+const port = process.env.PORT || 3000;
+const connection = process.env.DATABASE_URL || 'mongodb://localhost:27017/unptitfive';
 
 mongoose.connect(connection, {
     useNewUrlParser: true,
