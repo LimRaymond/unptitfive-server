@@ -12,7 +12,7 @@ mongoose.connect(connection, {
 });
 
 app.get('/', (req, res) => {
-    res.send('Hello world');
+    res.send('Hello world 2');
 });
 
 app.get('/users', async (req, res) => {
