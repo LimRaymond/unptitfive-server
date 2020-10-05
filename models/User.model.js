@@ -29,11 +29,12 @@ const userSchema = new mongoose.Schema({
     },
 });
 
-userSchema.statics.findByToken = function findByToken(token, cb) {
-    return jwt.verify(token, config.JWT_SECRET, (err, decode) => {
-        return this.findOne({ _id: decode, token }, (err, user) => {
-            if (err) return cb(err);
-            return cb(null, user);
+userSchema.statics.findByToken = function findByToken(token) {
+    return new Promise((resolve) => {
+        jwt.verify(token, config.JWT_SECRET, (err, decode) => {
+            this.findOne({ _id: decode, token }, (err, user) => {
+                resolve(user);
+            });
         });
     });
 };
