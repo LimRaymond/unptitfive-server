@@ -48,5 +48,26 @@ async function createMessage(req, res) {
     }
 }
 
+async function deleteMessage(req, res) {
+    const token = req.cookies.auth;
+    const user = await utils.getUserByToken(token);
+
+    if (!user || !user.is_admin) {
+        return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    if (!req.params.id) {
+        return res.status(400).json({ message: 'Missing parameters' });
+    }
+
+    try {
+        const result = await Message.deleteOne({ _id: req.params.id });
+        return res.status(200).json({ message: `${result.deletedCount} message deleted` });
+    } catch (error) {
+        return res.status(400).json({ message: 'Invalid message ID' });
+    }
+}
+
 exports.getMessages = getMessages;
 exports.createMessage = createMessage;
+exports.deleteMessage = deleteMessage;

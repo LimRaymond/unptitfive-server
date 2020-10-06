@@ -1,4 +1,3 @@
-const mongoose = require('mongoose');
 const Channel = require('../models/channel.model');
 const utils = require('../utils/utils');
 
@@ -55,7 +54,7 @@ async function deleteChannel(req, res) {
     }
 
     try {
-        const result = await Channel.deleteOne({ _id: mongoose.Types.ObjectId(req.params.id) });
+        const result = await Channel.deleteOne({ _id: req.params.id });
         return res.status(200).json({ message: `${result.deletedCount} channel deleted` });
     } catch (error) {
         return res.status(400).json({ message: 'Invalid channel ID' });
