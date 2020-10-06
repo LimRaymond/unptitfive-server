@@ -1,6 +1,4 @@
 const mongoose = require('mongoose');
-const jwt = require('jsonwebtoken');
-const config = require('../config.json');
 
 const userSchema = new mongoose.Schema({
     username: {
@@ -28,16 +26,6 @@ const userSchema = new mongoose.Schema({
         default: false,
     },
 });
-
-userSchema.statics.findByToken = function findByToken(token) {
-    return new Promise((resolve) => {
-        jwt.verify(token, config.JWT_SECRET, (err, decode) => {
-            this.findOne({ _id: decode, token }, (err, user) => {
-                resolve(user);
-            });
-        });
-    });
-};
 
 const User = mongoose.model('User', userSchema);
 

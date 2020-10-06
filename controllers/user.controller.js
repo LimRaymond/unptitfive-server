@@ -1,9 +1,14 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-const User = require('../models/User.model');
+const User = require('../models/user.model');
 const config = require('../config.json');
+const utils = require('../utils/utils');
 
 async function register(req, res) {
+    if (!req.body.username || !req.body.password || !req.body.password2) {
+        return res.status(400).json({ message: 'Missing parameters' });
+    }
+
     if (req.body.password !== req.body.password2) {
         return res.status(400).json({ message: 'Password not match' });
     }
@@ -11,7 +16,7 @@ async function register(req, res) {
     const user = await User.findOne({ username: req.body.username });
 
     if (user) {
-        return res.status(400).json({ message: 'Username already exits' });
+        return res.status(400).json({ message: 'Username already exists' });
     }
 
     const hash = await bcrypt.hash(req.body.password, 10);
@@ -29,9 +34,9 @@ async function register(req, res) {
 async function login(req, res) {
     const token = req.cookies.auth;
 
-    let user = await User.findByToken(token);
+    let user = await utils.getUserByToken(token);
     if (user) {
-        return res.status(400).json({ message: 'User already logged in' });
+        return res.status(400).json({ message: 'Already logged in' });
     }
 
     user = await User.findOne({ username: req.body.username });
@@ -63,7 +68,7 @@ async function login(req, res) {
 
 async function logout(req, res) {
     const token = req.cookies.auth;
-    const user = await User.findByToken(token);
+    const user = await utils.getUserByToken(token);
 
     if (!user) {
         return res.status(400).json({ message: 'Not logged in' });
@@ -74,7 +79,7 @@ async function logout(req, res) {
 
 async function profile(req, res) {
     const token = req.cookies.auth;
-    const user = await User.findByToken(token);
+    const user = await utils.getUserByToken(token);
 
     if (!user) {
         return res.status(400).json({ message: 'Not logged in' });
@@ -91,7 +96,7 @@ async function profile(req, res) {
 
 async function editProfile(req, res) {
     const token = req.cookies.auth;
-    const user = await User.findByToken(token);
+    const user = await utils.getUserByToken(token);
 
     if (!user) {
         return res.status(400).json({ message: 'Not logged in' });
