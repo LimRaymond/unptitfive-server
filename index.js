@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const bodyparser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const routes = require('./routes');
-const utils = require('./utils/utils');
+const startSocket = require('./socket');
 
 const port = process.env.PORT || 3000;
 const db = process.env.DATABASE_URL || 'mongodb://localhost:27017/unptitfive';
@@ -24,19 +24,7 @@ routes.routes.forEach((r) => {
     app.use(r.name, r.router);
 });
 
-io.use(async (socket, next) => {
-    if (socket.handshake.query && socket.handshake.query.token) {
-        const user = await utils.getUserByToken(socket.handshake.query.token);
-        if (!user) return next(new Error('Authentication error'));
-        socket.user_id = user._id;
-        return next();
-    }
-    return next(new Error('Authentication error'));
-});
-
-io.sockets.on('connection', (socket) => {
-    console.log(`New connection (${socket.user_id})`);
-});
+startSocket(io);
 
 server.listen(port, () => {
     console.log(`App is listening on port ${port}`);
