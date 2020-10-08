@@ -7,6 +7,7 @@ function startSocket(io) {
             const user = await utils.getUserByToken(socket.handshake.query.token);
             if (!user) return next(new Error('Authentication error'));
             socket.user = user;
+            socket.channel = null;
             return next();
         }
         return next(new Error('Authentication error'));
@@ -15,14 +16,37 @@ function startSocket(io) {
     io.sockets.on('connection', (socket) => {
         console.log(`New connection (${socket.user._id})`);
 
-        socket.on('message', async (data) => {
-            // Check if user is connected
-            const user = await utils.getUserByToken(socket.user.token);
-            if (!user) return;
-            const message = ent.encode(data.message);
-            socket.broadcast.emit('message', {
-                message,
+        socket.on('join', (channel) => {
+            if (socket.channel) {
+                socket.leave(socket.channel, () => {
+                    io.in(socket.channel).emit('data', {
+                        message: `<b style="color: teal;">${socket.user.username} has left the channel</b>`,
+                    });
+                });
+            }
+            socket.channel = channel;
+            socket.join(channel, () => {
+                io.in(channel).emit('data', {
+                    message: `<b style="color: teal;">${socket.user.username} has joined the channel</b>`,
+                });
             });
+        });
+
+        socket.on('message', (message) => {
+            if (socket.channel) {
+                message = ent.encode(message);
+                io.in(socket.channel).emit('data', {
+                    message: `<b>${socket.user.username}</b> : ${message}`,
+                });
+            }
+        });
+
+        socket.on('disconnect', () => {
+            if (socket.channel) {
+                io.in(socket.channel).emit('data', {
+                    message: `<b style="color: teal;">${socket.user.username} has left the channel</b>`,
+                });
+            }
         });
     });
 }
