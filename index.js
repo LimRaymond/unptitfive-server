@@ -24,6 +24,11 @@ routes.routes.forEach((r) => {
   app.use(r.name, r.router);
 });
 
+// Handle Error 404
+app.use((req, res) => {
+  res.status(404).json({ message: 'Not found' });
+});
+
 startSocket(io);
 
 server.listen(port, () => {

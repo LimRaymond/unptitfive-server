@@ -6,7 +6,10 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "migration:create": "migrate-mongo create",
+    "migration:up": "migrate-mongo up",
+    "migration:down": "migrate-mongo down"
   },
   "repository": {
     "type": "git",
@@ -25,6 +28,7 @@
     "ent": "^2.2.0",
     "express": "^4.17.1",
     "jsonwebtoken": "^8.5.1",
+    "migrate-mongo": "^8.1.2",
     "mongoose": "^5.10.7",
     "socket.io": "^2.3.0"
   },
