@@ -14,4 +14,28 @@ function getUserByToken(token) {
     });
 }
 
+function convertDate(str) {
+    const date = new Date(str);
+    const year = date.getFullYear();
+    let month = date.getMonth();
+    let day = date.getDate();
+    let hours = date.getHours();
+    let minutes = date.getMinutes();
+    month = (month < 10) ? `0${month}` : month;
+    day = (day < 10) ? `0${day}` : day;
+    hours = (hours < 10) ? `0${hours}` : hours;
+    minutes = (minutes < 10) ? `0${minutes}` : minutes;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (date.getTime() >= today.getTime()) {
+        return (`${hours}:${minutes}`);
+    }
+    if ((date.getTime() < today.getTime())
+    && (date.getTime() >= today.getTime() - (24 * 60 * 60 * 1000))) {
+        return (`Hier ${hours}:${minutes}`);
+    }
+    return (`${day}/${month}/${year} ${hours}:${minutes}`);
+}
+
 exports.getUserByToken = getUserByToken;
+exports.convertDate = convertDate;
