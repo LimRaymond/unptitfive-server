@@ -4,25 +4,12 @@ const User = require('../models/user.model');
 const config = require('../../config/config.json');
 
 async function register(req, res) {
-  if (!req.body.username || !req.body.password || !req.body.password2) {
-    return res.status(400).json({ message: 'Missing parameters' });
-  }
-
-  if (req.body.password !== req.body.password2) {
-    return res.status(400).json({ message: 'Password not match' });
-  }
-
-  const user = await User.findOne({ username: req.body.username });
-
-  if (user) {
-    return res.status(400).json({ message: 'Username already exists' });
-  }
-
   const hash = await bcrypt.hash(req.body.password, 10);
 
   const newuser = new User({
     username: req.body.username,
     password: hash,
+    email: req.body.email,
   });
 
   await newuser.save();
@@ -50,12 +37,15 @@ async function login(req, res) {
   await User.updateOne({ _id: user._id }, { token: newtoken });
 
   return res.status(200).cookie('auth', newtoken).json({
-    isAuth: true,
-    id: user._id,
-    username: user.username,
-    is_admin: user.is_admin,
-    is_mute: user.is_mute,
-    is_ban: user.is_ban,
+    message: 'Successful login',
+    user: {
+      id: user._id,
+      username: user.username,
+      email: user.email,
+      is_admin: user.is_admin,
+      is_mute: user.is_mute,
+      is_ban: user.is_ban,
+    },
   });
 }
 
@@ -66,12 +56,14 @@ async function logout(req, res) {
 
 async function profile(req, res) {
   return res.status(200).json({
-    isAuth: true,
-    id: req.user._id,
-    username: req.user.username,
-    is_admin: req.user.is_admin,
-    is_mute: req.user.is_mute,
-    is_ban: req.user.is_ban,
+    user: {
+      id: req.user._id,
+      username: req.user.username,
+      email: req.user.email,
+      is_admin: req.user.is_admin,
+      is_mute: req.user.is_mute,
+      is_ban: req.user.is_ban,
+    },
   });
 }
 

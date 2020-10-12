@@ -27,6 +27,7 @@
     "cookie-parser": "^1.4.5",
     "ent": "^2.2.0",
     "express": "^4.17.1",
+    "joi": "^17.2.1",
     "jsonwebtoken": "^8.5.1",
     "migrate-mongo": "^8.1.2",
     "mongoose": "^5.10.7",
