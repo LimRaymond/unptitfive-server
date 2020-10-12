@@ -1,27 +1,12 @@
 const Channel = require('../models/channel.model');
-const utils = require('../utils/utils');
 
 async function getChannels(req, res) {
-  const token = req.cookies.auth;
-  const user = await utils.getUserByToken(token);
-
-  if (!user) {
-    return res.status(401).json({ message: 'Unauthorized' });
-  }
-
   const channels = await Channel.find();
 
   return res.status(200).json(channels);
 }
 
 async function createChannel(req, res) {
-  const token = req.cookies.auth;
-  const user = await utils.getUserByToken(token);
-
-  if (!user || !user.is_admin) {
-    return res.status(401).json({ message: 'Unauthorized' });
-  }
-
   if (!req.body.name) {
     return res.status(400).json({ message: 'Missing parameters' });
   }
@@ -42,13 +27,6 @@ async function createChannel(req, res) {
 }
 
 async function deleteChannel(req, res) {
-  const token = req.cookies.auth;
-  const user = await utils.getUserByToken(token);
-
-  if (!user || !user.is_admin) {
-    return res.status(401).json({ message: 'Unauthorized' });
-  }
-
   if (!req.params.id) {
     return res.status(400).json({ message: 'Missing parameters' });
   }

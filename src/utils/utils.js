@@ -5,7 +5,7 @@ const config = require('../../config/config.json');
 function getUserByToken(token) {
   return new Promise((resolve, reject) => {
     jwt.verify(token, config.JWT_SECRET, (err, decode) => {
-      // if (err) reject(err);
+      if (err) reject(err);
       User.findOne({ _id: decode, token }, (err2, user) => {
         if (err2) reject(err2);
         resolve(user);

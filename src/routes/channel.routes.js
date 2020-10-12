@@ -1,8 +1,9 @@
 const router = require('express').Router();
 const controller = require('../controllers/channel.controller');
+const auth = require('../middlewares/auth');
 
-router.get('/', controller.getChannels);
-router.post('/', controller.createChannel);
-router.delete('/:id', controller.deleteChannel);
+router.get('/', auth, controller.getChannels);
+router.post('/', auth, controller.createChannel);
+router.delete('/:id', auth, controller.deleteChannel);
 
 module.exports = router;

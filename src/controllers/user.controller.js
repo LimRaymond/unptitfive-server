@@ -2,7 +2,6 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const User = require('../models/user.model');
 const config = require('../../config/config.json');
-const utils = require('../utils/utils');
 
 async function register(req, res) {
   if (!req.body.username || !req.body.password || !req.body.password2) {
@@ -32,14 +31,8 @@ async function register(req, res) {
 }
 
 async function login(req, res) {
-  const token = req.cookies.auth;
+  const user = await User.findOne({ username: req.body.username });
 
-  let user = await utils.getUserByToken(token);
-  if (user) {
-    return res.status(400).json({ message: 'Already logged in' });
-  }
-
-  user = await User.findOne({ username: req.body.username });
   if (!user) {
     return res.status(400).json({ message: 'Unknown username' });
   }
@@ -67,53 +60,35 @@ async function login(req, res) {
 }
 
 async function logout(req, res) {
-  const token = req.cookies.auth;
-  const user = await utils.getUserByToken(token);
-
-  if (!user) {
-    return res.status(400).json({ message: 'Not logged in' });
-  }
-  await User.updateOne({ _id: user._id }, { $unset: { token: 1 } });
+  await User.updateOne({ _id: req.user._id }, { $unset: { token: 1 } });
   return res.status(200).json({ message: 'Successful logout' });
 }
 
 async function profile(req, res) {
-  const token = req.cookies.auth;
-  const user = await utils.getUserByToken(token);
-
-  if (!user) {
-    return res.status(400).json({ message: 'Not logged in' });
-  }
   return res.status(200).json({
     isAuth: true,
-    id: user._id,
-    username: user.username,
-    is_admin: user.is_admin,
-    is_mute: user.is_mute,
-    is_ban: user.is_ban,
+    id: req.user._id,
+    username: req.user.username,
+    is_admin: req.user.is_admin,
+    is_mute: req.user.is_mute,
+    is_ban: req.user.is_ban,
   });
 }
 
 async function editProfile(req, res) {
-  const token = req.cookies.auth;
-  let user = await utils.getUserByToken(token);
-
-  if (!user) {
-    return res.status(400).json({ message: 'Not logged in' });
-  }
   const updates = {};
 
-  if (req.body.username && req.body.username !== user.username) {
-    user = await User.findOne({ username: req.body.username });
+  if (req.body.username && req.body.username !== req.user.username) {
+    const user = await User.findOne({ username: req.body.username });
     if (user) {
-      return res.status(400).json({ message: 'Username already exits' });
+      return res.status(400).json({ message: 'Username already exists' });
     }
     updates.username = req.body.username;
   }
   if (req.body.password) {
     updates.password = await bcrypt.hash(req.body.password, 10);
   }
-  await User.updateOne({ _id: user._id }, updates);
+  await User.updateOne({ _id: req.user._id }, updates);
   return res.status(200).json({ message: 'Profile updated' });
 }
 

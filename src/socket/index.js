@@ -6,11 +6,15 @@ const utils = require('../utils/utils');
 function startSocket(io) {
   io.use(async (socket, next) => {
     if (socket.handshake.query && socket.handshake.query.token) {
-      const user = await utils.getUserByToken(socket.handshake.query.token);
-      if (!user) return next(new Error('Authentication error'));
-      socket.user = user;
-      socket.channel = null;
-      return next();
+      try {
+        const user = await utils.getUserByToken(socket.handshake.query.token);
+        if (!user) return next(new Error('Authentication error'));
+        socket.user = user;
+        socket.channel = null;
+        return next();
+      } catch {
+        return next(new Error('Authentication error'));
+      }
     }
     return next(new Error('Authentication error'));
   });

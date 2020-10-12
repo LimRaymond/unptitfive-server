@@ -1,14 +1,6 @@
 const Message = require('../models/message.model');
-const utils = require('../utils/utils');
 
 async function getMessages(req, res) {
-  const token = req.cookies.auth;
-  const user = await utils.getUserByToken(token);
-
-  if (!user) {
-    return res.status(401).json({ message: 'Unauthorized' });
-  }
-
   if (!req.params.channel_id) {
     return res.status(400).json({ message: 'Missing parameters' });
   }
@@ -22,13 +14,6 @@ async function getMessages(req, res) {
 }
 
 async function createMessage(req, res) {
-  const token = req.cookies.auth;
-  const user = await utils.getUserByToken(token);
-
-  if (!user) {
-    return res.status(401).json({ message: 'Unauthorized' });
-  }
-
   if (!req.body.message || !req.body.channel_id) {
     return res.status(400).json({ message: 'Missing parameters' });
   }
@@ -36,7 +21,7 @@ async function createMessage(req, res) {
   try {
     const newmessage = new Message({
       message: req.body.message,
-      user: user._id,
+      user: req.user._id,
       channel: req.body.channel_id,
     });
 
@@ -49,13 +34,6 @@ async function createMessage(req, res) {
 }
 
 async function deleteMessage(req, res) {
-  const token = req.cookies.auth;
-  const user = await utils.getUserByToken(token);
-
-  if (!user || !user.is_admin) {
-    return res.status(401).json({ message: 'Unauthorized' });
-  }
-
   if (!req.params.id) {
     return res.status(400).json({ message: 'Missing parameters' });
   }
