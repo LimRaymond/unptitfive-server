@@ -31,12 +31,17 @@ npm start
 
 ## Linter
 
-### `npm run lint`
+Use the following command to lint all JS files in this directory, including immediate children as well as files that are deeper in the directory structure:
 
-Lint all JS files in this directory, including immediate children as well as files that are deeper in the directory structure.<br />
+```bash
+npm run lint
+```
+
 See the [official ESLint website](https://eslint.org) for more information.
 
 ## Database Migration System
+
+Following commands allow you to handle database migration.
 
 ### `npm run migration:create [description]`
 
