@@ -4,9 +4,9 @@ const validator = require('../controllers/user.validator');
 const auth = require('../middlewares/auth');
 
 router.post('/register', validator.register, controller.register);
-router.post('/login', controller.login);
+router.post('/login', validator.login, controller.login);
 router.get('/logout', auth, controller.logout);
 router.get('/profile', auth, controller.profile);
-router.post('/profile/edit', auth, controller.editProfile);
+router.post('/profile', auth, validator.editProfile, controller.editProfile);
 
 module.exports = router;

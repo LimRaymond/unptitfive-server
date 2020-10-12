@@ -18,33 +18,18 @@ async function register(req, res) {
 }
 
 async function login(req, res) {
-  const user = await User.findOne({ username: req.body.username });
-
-  if (!user) {
-    return res.status(400).json({ message: 'Unknown username' });
-  }
-
-  const match = await bcrypt.compare(req.body.password, user.password);
-  if (!match) {
-    return res.status(400).json({ message: 'Wrong password' });
-  }
-
-  if (user.is_ban) {
-    return res.status(400).json({ message: 'You are currently banned' });
-  }
-
-  const newtoken = jwt.sign(user._id.toHexString(), config.JWT_SECRET);
-  await User.updateOne({ _id: user._id }, { token: newtoken });
+  const newtoken = jwt.sign(req.user._id.toHexString(), config.JWT_SECRET);
+  await User.updateOne({ _id: req.user._id }, { token: newtoken });
 
   return res.status(200).cookie('auth', newtoken).json({
     message: 'Successful login',
     user: {
-      id: user._id,
-      username: user.username,
-      email: user.email,
-      is_admin: user.is_admin,
-      is_mute: user.is_mute,
-      is_ban: user.is_ban,
+      id: req.user._id,
+      username: req.user.username,
+      email: req.user.email,
+      is_admin: req.user.is_admin,
+      is_mute: req.user.is_mute,
+      is_ban: req.user.is_ban,
     },
   });
 }
@@ -70,12 +55,11 @@ async function profile(req, res) {
 async function editProfile(req, res) {
   const updates = {};
 
-  if (req.body.username && req.body.username !== req.user.username) {
-    const user = await User.findOne({ username: req.body.username });
-    if (user) {
-      return res.status(400).json({ message: 'Username already exists' });
-    }
+  if (req.body.username) {
     updates.username = req.body.username;
+  }
+  if (req.body.email) {
+    updates.email = req.body.email;
   }
   if (req.body.password) {
     updates.password = await bcrypt.hash(req.body.password, 10);
