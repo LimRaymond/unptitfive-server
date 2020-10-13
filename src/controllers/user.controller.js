@@ -4,6 +4,13 @@ const User = require('../models/user.model');
 const config = require('../../config/config.json');
 
 async function register(req, res) {
+  if (await User.findOne({ username: req.body.username })) {
+    return res.status(400).json({ message: 'Username already exists' });
+  }
+  if (await User.findOne({ email: req.body.email })) {
+    return res.status(400).json({ message: 'Email already exists' });
+  }
+
   const hash = await bcrypt.hash(req.body.password, 10);
 
   const newuser = new User({
@@ -18,18 +25,28 @@ async function register(req, res) {
 }
 
 async function login(req, res) {
-  const newtoken = jwt.sign(req.user._id.toHexString(), config.JWT_SECRET);
-  await User.updateOne({ _id: req.user._id }, { token: newtoken });
+  const user = await User.findOne({ username: req.body.username });
+
+  if (!user || !await bcrypt.compare(req.body.password, user.password)) {
+    return res.status(400).json({ message: 'Incorrect username or password' });
+  }
+  if (user.is_ban) {
+    return res.status(400).json({ message: 'You are currently banned' });
+  }
+
+  const newtoken = jwt.sign(user._id.toHexString(), config.JWT_SECRET);
+  await User.updateOne({ _id: user._id }, { token: newtoken });
 
   return res.status(200).cookie('auth', newtoken).json({
     message: 'Successful login',
     user: {
-      id: req.user._id,
-      username: req.user.username,
-      email: req.user.email,
-      is_admin: req.user.is_admin,
-      is_mute: req.user.is_mute,
-      is_ban: req.user.is_ban,
+      id: user._id,
+      username: user.username,
+      email: user.email,
+      is_admin: user.is_admin,
+      is_mute: user.is_mute,
+      is_ban: user.is_ban,
+      token: newtoken,
     },
   });
 }
@@ -48,21 +65,23 @@ async function profile(req, res) {
       is_admin: req.user.is_admin,
       is_mute: req.user.is_mute,
       is_ban: req.user.is_ban,
+      token: req.user.token,
     },
   });
 }
 
 async function editProfile(req, res) {
-  const updates = {};
+  const updates = req.body;
 
-  if (req.body.username) {
-    updates.username = req.body.username;
+  if (updates.username && await User.findOne({ username: updates.username })) {
+    return res.status(400).json({ message: 'Username already exists' });
   }
-  if (req.body.email) {
-    updates.email = req.body.email;
+  if (updates.email && await User.findOne({ email: updates.email })) {
+    return res.status(400).json({ message: 'Email already exists' });
   }
-  if (req.body.password) {
-    updates.password = await bcrypt.hash(req.body.password, 10);
+
+  if (updates.password) {
+    updates.password = await bcrypt.hash(updates.password, 10);
   }
   await User.updateOne({ _id: req.user._id }, updates);
   return res.status(200).json({ message: 'Profile updated' });
