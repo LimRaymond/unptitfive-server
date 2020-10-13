@@ -4,10 +4,10 @@ const User = require('../models/user.model');
 const config = require('../../config/config.json');
 
 async function register(req, res) {
-  if (await User.findOne({ username: req.body.username })) {
+  if (await User.findOne({ username: { $regex: `^${req.body.username}$`, $options: 'i' } })) {
     return res.status(400).json({ message: 'Username already exists' });
   }
-  if (await User.findOne({ email: req.body.email })) {
+  if (await User.findOne({ email: req.body.email.toLowerCase() })) {
     return res.status(400).json({ message: 'Email already exists' });
   }
 
@@ -16,7 +16,7 @@ async function register(req, res) {
   const newuser = new User({
     username: req.body.username,
     password: hash,
-    email: req.body.email,
+    email: req.body.email.toLowerCase(),
   });
 
   await newuser.save();
@@ -73,11 +73,14 @@ async function profile(req, res) {
 async function editProfile(req, res) {
   const updates = req.body;
 
-  if (updates.username && await User.findOne({ username: updates.username })) {
+  if (updates.username && await User.findOne({ username: { $regex: `^${updates.username}$`, $options: 'i' } })) {
     return res.status(400).json({ message: 'Username already exists' });
   }
-  if (updates.email && await User.findOne({ email: updates.email })) {
-    return res.status(400).json({ message: 'Email already exists' });
+  if (updates.email) {
+    updates.email = updates.email.toLowerCase();
+    if (await User.findOne({ email: updates.email })) {
+      return res.status(400).json({ message: 'Email already exists' });
+    }
   }
 
   if (updates.password) {
