@@ -40,7 +40,7 @@ async function login(req, res) {
   const newtoken = jwt.sign(user._id.toHexString(), config.JWT_SECRET);
   await User.updateOne({ _id: user._id }, { token: newtoken });
 
-  return res.status(200).cookie('auth', newtoken, { signed: true, httpOnly: true }).json({
+  return res.status(200).cookie('auth', newtoken).json({
     message: translate('SUCCESSFUL_LOGIN', lang),
     user: {
       id: user._id,

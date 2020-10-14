@@ -5,7 +5,6 @@ const mongoose = require('mongoose');
 const bodyparser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
-const config = require('./config/config.json');
 const routes = require('./src/routes');
 const startSocket = require('./src/socket');
 const { translate } = require('./src/utils/utils');
@@ -21,17 +20,8 @@ mongoose.connect(db, {
 
 app.use(bodyparser.urlencoded({ extended: false }));
 app.use(bodyparser.json());
-app.use(cookieParser(config.COOKIE_SECRET));
-app.use(cors({ origin: true, credentials: true }));
-
-// prevent CORS problems
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
-  res.header('Access-Control-Allow-Headers', 'Origin, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, X-Response-Time, X-PINGOTHER, X-CSRF-Token, Authorization');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT ,DELETE');
-  res.header('Access-Control-Allow-Credentials', true);
-  next();
-});
+app.use(cookieParser());
+app.use(cors());
 
 routes.routes.forEach((r) => {
   app.use(r.name, r.router);
