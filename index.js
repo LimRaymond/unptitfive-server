@@ -22,7 +22,16 @@ mongoose.connect(db, {
 app.use(bodyparser.urlencoded({ extended: false }));
 app.use(bodyparser.json());
 app.use(cookieParser(config.COOKIE_SECRET));
-app.use(cors());
+app.use(cors({ origin: true, credentials: true }));
+
+// prevent CORS problems
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', 'Origin, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, X-Response-Time, X-PINGOTHER, X-CSRF-Token, Authorization');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT ,DELETE');
+  res.header('Access-Control-Allow-Credentials', true);
+  next();
+});
 
 routes.routes.forEach((r) => {
   app.use(r.name, r.router);
