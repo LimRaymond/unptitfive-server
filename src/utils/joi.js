@@ -1,20 +1,23 @@
 const Joi = require('joi');
+const { translate } = require('./utils');
 
-const customString = Joi.string()
+// Joi Override Error Messages
+
+const customString = (lang) => Joi.string()
   .messages({
-    'string.base': '{#label} is not a valid string',
-    'string.empty': '{#label} is empty',
-    'string.email': '{#label} is not a valid email address',
-    'string.pattern.base': '{#label} fails to match the required pattern: {#regex}',
-    'string.alphanum': '{#label} must only contain alphanumeric characters',
-    'string.min': '{#label} is shorter than expected (min: {#limit})',
-    'string.max': '{#label} is longer than expected (max: {#limit})',
-    'any.required': '{#label} is required',
+    'string.base': translate('ERROR_STRING_INVALID', lang, '{#label}'),
+    'string.empty': translate('ERROR_STRING_EMPTY', lang, '{#label}'),
+    'string.email': translate('ERROR_EMAIL_INVALID', lang, '{#label}'),
+    'string.pattern.base': translate('ERROR_REGEX_MISMATCH', lang, '{#label}', '{#regex}'),
+    'string.alphanum': translate('ERROR_STRING_ALPHANUM', lang, '{#label}'),
+    'string.min': translate('ERROR_STRING_MIN', lang, '{#label}', '{#limit}'),
+    'string.max': translate('ERROR_STRING_MAX', lang, '{#label}', '{#limit}'),
+    'any.required': translate('ERROR_REQUIRED', lang, '{#label}'),
   });
 
-const customObject = Joi.object()
+const customObject = (lang) => Joi.object()
   .messages({
-    'object.unknown': '{#label} is not allowed',
+    'object.unknown': translate('ERROR_NOT_ALLOWED', lang, '{#label}'),
     'object.min': 'Not enough key provided (min: {#limit})',
   });
 

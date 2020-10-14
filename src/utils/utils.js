@@ -1,6 +1,26 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/user.model');
 const config = require('../../config/config.json');
+const translations = require('./translations.json');
+
+function translate(msgCode, lang, ...args) {
+  if (!translations[msgCode]) return '';
+
+  // Select the appropriate language code
+  const knownLang = Object.keys(translations[msgCode]);
+  let translation = translations[msgCode][knownLang[0]];
+
+  const inter = lang.filter((e) => knownLang.includes(e));
+  if (inter.length) {
+    translation = translations[msgCode][inter[0]];
+  }
+
+  // Replace args in translation string
+  args.forEach((arg) => {
+    translation = translation.replace('{$}', arg);
+  });
+  return (translation);
+}
 
 function getUserByToken(token) {
   return new Promise((resolve, reject) => {
@@ -37,5 +57,6 @@ function convertDate(str) {
   return (`${day}/${month}/${year} ${hours}:${minutes}`);
 }
 
+exports.translate = translate;
 exports.getUserByToken = getUserByToken;
 exports.convertDate = convertDate;

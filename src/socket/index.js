@@ -1,16 +1,21 @@
 const ent = require('ent');
 const Channel = require('../models/channel.model');
 const Message = require('../models/message.model');
-const utils = require('../utils/utils');
+const { translate, getUserByToken, convertDate } = require('../utils/utils');
 
 function startSocket(io) {
   io.use(async (socket, next) => {
+    let lang = [];
+    if (socket.handshake.query && socket.handshake.query.lang) {
+      lang = socket.handshake.query.lang.split(',');
+    }
     if (socket.handshake.query && socket.handshake.query.token) {
       try {
-        const user = await utils.getUserByToken(socket.handshake.query.token);
+        const user = await getUserByToken(socket.handshake.query.token);
         if (!user) return next(new Error('Authentication error'));
         socket.user = user;
         socket.channel = null;
+        socket.lang = lang;
         return next();
       } catch {
         return next(new Error('Authentication error'));
@@ -29,7 +34,7 @@ function startSocket(io) {
         if (socket.channel) {
           socket.leave(socket.channel.name, () => {
             io.in(socket.channel.name).emit('info', {
-              message: `${socket.user.username} has left the channel`,
+              message: translate('HAS_LEFT_CHANNEL', socket.lang, socket.user.username),
               color: 'teal',
             });
           });
@@ -42,16 +47,18 @@ function startSocket(io) {
           oldMessages.push({
             username: m.user.username,
             message: m.message,
-            date: utils.convertDate(m.date),
+            date: convertDate(m.date),
           });
         });
-        socket.emit('message', oldMessages);
+        if (oldMessages.length) {
+          socket.emit('message', oldMessages);
+        }
 
         // Join the new channel
         socket.channel = channel;
         socket.join(channel.name, () => {
           io.in(socket.channel.name).emit('info', {
-            message: `${socket.user.username} has joined the channel`,
+            message: translate('HAS_JOINED_CHANNEL', socket.lang, socket.user.username),
             color: 'teal',
           });
         });
@@ -75,7 +82,7 @@ function startSocket(io) {
         io.in(socket.channel.name).emit('message', [{
           username: socket.user.username,
           message: encodedMsg,
-          date: utils.convertDate(res.date),
+          date: convertDate(res.date),
         }]);
       }
     });
@@ -83,7 +90,7 @@ function startSocket(io) {
     socket.on('disconnect', () => {
       if (socket.channel) {
         io.in(socket.channel.name).emit('info', {
-          message: `${socket.user.username} has left the channel`,
+          message: translate('HAS_LEFT_CHANNEL', socket.lang, socket.user.username),
           color: 'teal',
         });
       }

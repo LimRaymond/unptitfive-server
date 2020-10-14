@@ -6,6 +6,7 @@ const bodyparser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const routes = require('./src/routes');
 const startSocket = require('./src/socket');
+const { translate } = require('./src/utils/utils');
 
 const port = process.env.PORT || 3000;
 const db = process.env.DATABASE_URL || 'mongodb://localhost:27017/unptitfive';
@@ -26,7 +27,8 @@ routes.routes.forEach((r) => {
 
 // Handle Error 404
 app.use((req, res) => {
-  res.status(404).json({ message: 'Not found' });
+  const lang = req.acceptsLanguages();
+  res.status(404).json({ message: translate('ERROR_404', lang) });
 });
 
 startSocket(io);
