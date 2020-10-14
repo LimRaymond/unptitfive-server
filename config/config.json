@@ -1,4 +1,3 @@
 {
-  "JWT_SECRET": "secret",
-  "COOKIE_SECRET": "secret"
+  "JWT_SECRET": "secret"
 }
