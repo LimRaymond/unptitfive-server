@@ -4,7 +4,7 @@ const { translate } = require('../utils/utils');
 async function getMessages(req, res) {
   if (req.params.channel_id) {
     try {
-      const messages = await Message.find({ channel: req.params.channel_id });
+      const messages = await Message.find({ channel: req.params.channel_id }).populate('user', 'username');
       return res.status(200).json(messages);
     } catch (error) {
       const lang = req.acceptsLanguages();

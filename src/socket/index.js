@@ -40,20 +40,6 @@ function startSocket(io) {
           });
         }
 
-        // Send old channel messages to the newcomer
-        const messages = await Message.find({ channel: channel._id }).populate('user', 'username');
-        const oldMessages = [];
-        messages.forEach((m) => {
-          oldMessages.push({
-            username: m.user.username,
-            message: m.message,
-            date: convertDate(m.date),
-          });
-        });
-        if (oldMessages.length) {
-          socket.emit('message', oldMessages);
-        }
-
         // Join the new channel
         socket.channel = channel;
         socket.join(channel.name, () => {
@@ -79,11 +65,11 @@ function startSocket(io) {
         const res = await newmessage.save();
 
         // Broadcast message
-        io.in(socket.channel.name).emit('message', [{
+        io.in(socket.channel.name).emit('message', {
           username: socket.user.username,
           message: encodedMsg,
           date: convertDate(res.date),
-        }]);
+        });
       }
     });
 
