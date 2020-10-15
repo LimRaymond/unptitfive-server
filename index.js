@@ -21,7 +21,7 @@ mongoose.connect(db, {
 app.use(bodyparser.urlencoded({ extended: false }));
 app.use(bodyparser.json());
 app.use(cookieParser());
-app.use(cors());
+app.use(cors({ credentials: true }));
 
 routes.routes.forEach((r) => {
   app.use(r.name, r.router);
