@@ -24,7 +24,7 @@ app.use(cookieParser());
 app.use(cors({
   credentials: true,
   origin: (origin, callback) => {
-    if (['http://localhost', 'https://unptitfive-front.herokuapp.com'].indexOf(origin) !== -1) {
+    if (['http://localhost:8080', 'https://unptitfive-front.herokuapp.com'].indexOf(origin) !== -1) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
