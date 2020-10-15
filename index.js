@@ -21,7 +21,16 @@ mongoose.connect(db, {
 app.use(bodyparser.urlencoded({ extended: false }));
 app.use(bodyparser.json());
 app.use(cookieParser());
-app.use(cors({ credentials: true, origin: ['http://localhost', 'https://unptitfive-front.herokuapp.com'] }));
+app.use(cors({
+  credentials: true,
+  origin: (origin, callback) => {
+    if (['http://localhost', 'https://unptitfive-front.herokuapp.com'].indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+}));
 
 routes.routes.forEach((r) => {
   app.use(r.name, r.router);
