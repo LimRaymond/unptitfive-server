@@ -21,7 +21,7 @@ mongoose.connect(db, {
 app.use(bodyparser.urlencoded({ extended: false }));
 app.use(bodyparser.json());
 app.use(cookieParser());
-app.use(cors({ credentials: true, origin: 'http://localhost:8080' }));
+app.use(cors({ credentials: true, origin: ['http://localhost', 'https://unptitfive-front.herokuapp.com'] }));
 
 routes.routes.forEach((r) => {
   app.use(r.name, r.router);
