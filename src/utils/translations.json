@@ -59,6 +59,10 @@
     "en": "Email already exists",
     "fr": "Cette adresse email existe déjà"
   },
+  "ERROR_CHANNEL_EXIST": {
+    "en": "Channel already exists",
+    "fr": "Ce canal existe déjà"
+  },
   "ERROR_INVALID_CREDENTIALS": {
     "en": "Incorrect username or password",
     "fr": "Nom d'utilisateur ou mot de passe incorrect"
@@ -66,6 +70,14 @@
   "ERROR_BANNED": {
     "en": "You are currently banned",
     "fr": "Vous êtes actuellement banni"
+  },
+  "CHANNEL_CREATED": {
+    "en": "Channel created",
+    "fr": "Canal créé"
+  },
+  "CHANNEL_DELETED": {
+    "en": "Channel deleted",
+    "fr": "Canal supprimé"
   },
   "USER_CREATED": {
     "en": "User created",
