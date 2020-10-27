@@ -4,7 +4,11 @@ const { translate } = require('../utils/utils');
 module.exports = async (req, res, next) => {
   const lang = req.acceptsLanguages();
   try {
-    const token = req.cookies.auth;
+    let token = '';
+    if (req.headers.authorization.startsWith('Bearer ')) {
+      token = req.headers.authorization.substring(7, req.headers.authorization.length);
+    }
+    console.log(token);
     const user = await utils.getUserByToken(token);
 
     if (!user) {
