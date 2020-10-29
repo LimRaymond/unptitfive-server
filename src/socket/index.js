@@ -33,21 +33,29 @@ function startSocket(io) {
         // Leave the old channel
         if (socket.channel) {
           socket.leave(socket.channel.name, () => {
-            socket.to(socket.channel.name).emit('info', {
+            io.in(socket.channel.name).emit('info', {
               message: translate('HAS_LEFT_CHANNEL', socket.lang, socket.user.username),
+              color: 'teal',
+            });
+            // And then join the new channel
+            socket.channel = channel;
+            socket.join(channel.name, () => {
+              io.in(socket.channel.name).emit('info', {
+                message: translate('HAS_JOINED_CHANNEL', socket.lang, socket.user.username),
+                color: 'teal',
+              });
+            });
+          });
+        } else {
+          // Join the new channel
+          socket.channel = channel;
+          socket.join(channel.name, () => {
+            io.in(socket.channel.name).emit('info', {
+              message: translate('HAS_JOINED_CHANNEL', socket.lang, socket.user.username),
               color: 'teal',
             });
           });
         }
-
-        // Join the new channel
-        socket.channel = channel;
-        socket.join(channel.name, () => {
-          io.in(socket.channel.name).emit('info', {
-            message: translate('HAS_JOINED_CHANNEL', socket.lang, socket.user.username),
-            color: 'teal',
-          });
-        });
       }
     });
 
@@ -75,7 +83,7 @@ function startSocket(io) {
 
     socket.on('disconnect', () => {
       if (socket.channel) {
-        socket.to(socket.channel.name).emit('info', {
+        io.in(socket.channel.name).emit('info', {
           message: translate('HAS_LEFT_CHANNEL', socket.lang, socket.user.username),
           color: 'teal',
         });
