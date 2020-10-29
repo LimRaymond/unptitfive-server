@@ -29,7 +29,7 @@ function startSocket(io) {
 
     socket.on('join', async (channelName) => {
       const channel = await Channel.findOne({ name: channelName });
-      if (channel) {
+      if (channel && !(socket.channel && socket.channel.name === channelName)) {
         // Leave the old channel
         if (socket.channel) {
           socket.leave(socket.channel.name, () => {
@@ -79,6 +79,7 @@ function startSocket(io) {
           message: translate('HAS_LEFT_CHANNEL', socket.lang, socket.user.username),
           color: 'teal',
         });
+        socket.channel = null;
       }
     });
   });
