@@ -33,7 +33,7 @@ function startSocket(io) {
         // Leave the old channel
         if (socket.channel) {
           socket.leave(socket.channel.name, () => {
-            io.in(socket.channel.name).emit('info', {
+            socket.to(socket.channel.name).emit('info', {
               message: translate('HAS_LEFT_CHANNEL', socket.lang, socket.user.username),
               color: 'teal',
             });
@@ -75,7 +75,7 @@ function startSocket(io) {
 
     socket.on('disconnect', () => {
       if (socket.channel) {
-        io.in(socket.channel.name).emit('info', {
+        socket.to(socket.channel.name).emit('info', {
           message: translate('HAS_LEFT_CHANNEL', socket.lang, socket.user.username),
           color: 'teal',
         });
