@@ -21,7 +21,7 @@
   },
   "ERROR_STRING_MIN": {
     "en": "{$} is shorter than expected (min: {$})",
-    "fr": "{$} is trop court (min: {$})"
+    "fr": "{$} est trop court (min: {$})"
   },
   "ERROR_STRING_MAX": {
     "en": "{$} is longer than expected (max: {$})",
