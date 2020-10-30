@@ -7,13 +7,11 @@ function translate(msgCode, lang, ...args) {
   if (!translations[msgCode]) return '';
 
   // Use only the first two characters in lang code
-  console.log(lang);
   const langSub = [];
   lang.forEach((l) => {
     langSub.push(l.substring(0, 2));
   });
   lang = langSub;
-  console.log(lang);
 
   // Select the appropriate language code
   const knownLang = Object.keys(translations[msgCode]);
