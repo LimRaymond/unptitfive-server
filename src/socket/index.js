@@ -1,4 +1,3 @@
-const ent = require('ent');
 const Channel = require('../models/channel.model');
 const Message = require('../models/message.model');
 const { translate, getUserByToken, convertDate } = require('../utils/utils');
@@ -25,8 +24,6 @@ function startSocket(io) {
   });
 
   io.sockets.on('connection', (socket) => {
-    console.log(`New connection (${socket.user._id})`);
-
     socket.on('join', async (channelName) => {
       const channel = await Channel.findOne({ name: channelName });
       if (channel && !(socket.channel && socket.channel.name === channelName)) {
@@ -61,12 +58,9 @@ function startSocket(io) {
 
     socket.on('message', async (message) => {
       if (socket.channel) {
-        // Encode message
-        // const encodedMsg = ent.encode(message);
-
         // Save message in database
         const newmessage = new Message({
-          message: message,
+          message,
           user: socket.user._id,
           channel: socket.channel._id,
         });
@@ -75,7 +69,7 @@ function startSocket(io) {
         // Broadcast message
         io.in(socket.channel.name).emit('message', {
           username: socket.user.username,
-          message: message,
+          message,
           date: convertDate(res.date),
         });
       }

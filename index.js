@@ -38,6 +38,4 @@ app.use((req, res) => {
 
 startSocket(io);
 
-server.listen(port, () => {
-  console.log(`App is listening on port ${port}`);
-});
+server.listen(port);
