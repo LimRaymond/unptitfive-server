@@ -18,6 +18,12 @@ mongoose.connect(db, {
   useCreateIndex: true,
 });
 
+webpush.setVapidDetails(
+  'mailto: corentin@outlook.com',
+  'BOdvGk6xgnopGw-QOw3QYp0LGmKPuoWSRLaxtiG-AVxsUcORkHcgDpCFS1EEIoki16gAFZcOICin5QOfGb67m_k',
+  'nPL9HYhcZWVZcyJmobSad7SLZcStuXfZLDSymnNxb38',
+);
+
 app.use(bodyparser.urlencoded({ extended: false }));
 app.use(bodyparser.json());
 app.use(cookieParser());
@@ -28,6 +34,24 @@ app.use(cors({
 
 routes.routes.forEach((r) => {
   app.use(r.name, r.router);
+});
+
+app.post('/notifications/subscribe', (req, res) => {
+  const subscription = req.body;
+
+  const payload = {
+    title: 'testing',
+    body: 'success', 
+  };
+
+  console.log(subscription);
+   
+  webpush
+  .sendNotification(subscription, JSON.stringify(payload))
+  .then((result) => console.log(result))
+  .catch((e) => console.log(e.stack));
+
+  res.status(200).json({ success: true }); 
 });
 
 // Handle Error 404
