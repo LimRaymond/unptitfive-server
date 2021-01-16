@@ -8,6 +8,7 @@ const cors = require('cors');
 const routes = require('./src/routes');
 const startSocket = require('./src/socket');
 const { translate } = require('./src/utils/utils');
+const webpush = require('web-push');
 
 const port = process.env.PORT || 3000;
 const db = process.env.DATABASE_URL || 'mongodb://localhost:27017/unptitfive';
@@ -38,14 +39,13 @@ routes.routes.forEach((r) => {
 
 app.post('/notifications/subscribe', (req, res) => {
   const subscription = req.body;
-
   const payload = {
     title: 'testing',
     body: 'success', 
   };
 
   console.log(subscription);
-   
+
   webpush
   .sendNotification(subscription, JSON.stringify(payload))
   .then((result) => console.log(result))
