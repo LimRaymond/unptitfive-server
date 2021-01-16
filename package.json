@@ -31,7 +31,8 @@
     "jsonwebtoken": "^8.5.1",
     "migrate-mongo": "^8.1.2",
     "mongoose": "^5.10.7",
-    "socket.io": "^2.3.0"
+    "socket.io": "^2.3.0",
+    "web-push": "^3.4.4"
   },
   "devDependencies": {
     "eslint": "^7.2.0",
