@@ -23,7 +23,7 @@ app.use(bodyparser.json());
 app.use(cookieParser());
 app.use(cors({
   credentials: true,
-  origin: ['http://localhost:3000', 'http://localhost:8080', 'https://unptitfive-front.herokuapp.com'],
+  origin: ['http://localhost:3000', 'http://localhost:8080', 'https://unptitfive-front.herokuapp.com', 'https://epi-pwa-front.herokuapp.com'],
 }));
 
 routes.routes.forEach((r) => {
