@@ -28,10 +28,17 @@ webpush.setVapidDetails(
 app.use(bodyparser.urlencoded({ extended: false }));
 app.use(bodyparser.json());
 app.use(cookieParser());
-app.use(cors({
-  credentials: true,
-  origin: ['http://localhost:3000', 'http://localhost:8080', 'https://unptitfive-front.herokuapp.com', 'https://epi-pwa-front.herokuapp.com'],
-}));
+app.use(
+  cors({
+    credentials: true,
+    origin: [
+      'http://localhost:3000',
+      'http://localhost:8080',
+      'https://unptitfive-front.herokuapp.com',
+      'https://epi-pwa-front.herokuapp.com',
+    ],
+  }),
+);
 
 routes.routes.forEach((r) => {
   app.use(r.name, r.router);
@@ -40,18 +47,18 @@ routes.routes.forEach((r) => {
 app.post('/notifications/subscribe', (req, res) => {
   const subscription = req.body;
   const payload = {
-    title: 'testing',
-    body: 'success', 
+    title: 'Notification de message',
+    body: 'Vous avez reçu un nouveau message !',
   };
 
   console.log(subscription);
 
   webpush
-  .sendNotification(subscription, JSON.stringify(payload))
-  .then((result) => console.log(result))
-  .catch((e) => console.log(e.stack));
+    .sendNotification(subscription, JSON.stringify(payload))
+    .then((result) => console.log(result))
+    .catch((e) => console.log(e.stack));
 
-  res.status(200).json({ success: true }); 
+  res.status(200).json({ success: true });
 });
 
 // Handle Error 404
