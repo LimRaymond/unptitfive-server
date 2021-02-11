@@ -18,6 +18,7 @@ const userSchema = new mongoose.Schema({
   },
   localisation: {
     type: String,
+    default: '',
   },
   token: {
     type: String,
