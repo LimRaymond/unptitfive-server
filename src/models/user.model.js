@@ -16,6 +16,9 @@ const userSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
+  localisation: {
+    type: String,
+  },
   token: {
     type: String,
   },
